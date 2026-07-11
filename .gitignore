@@ -1,0 +1,19 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Arquivos compilados do Java
+*.class
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Sistema
+.DS_Store
+Thumbs.db
