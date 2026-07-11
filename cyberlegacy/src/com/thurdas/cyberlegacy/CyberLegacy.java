@@ -15,7 +15,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
 
     public final int TILE_SIZE = 32;
 
-    // --- VARIÁVEIS DE TEXTURA ---
+
     private BufferedImage[] floorTextures = new BufferedImage[3];
     private BufferedImage[] wallTextures = new BufferedImage[3];
     private BufferedImage currentFloorTexture;
@@ -700,13 +700,13 @@ class UIManager {
     }
 
     private void drawCredits(Graphics2D g, int w, int h) {
-        // Verifica se a textura de fundo dos créditos foi carregada
+
         if (game.creditsScreenTexture != null) {
             g.drawImage(game.creditsScreenTexture, 0, 0, w, h, null);
-            // Desenha um filtro semi-transparente escuro para o texto branco não sumir caso a imagem seja clara
+
 
         } else {
-            // Fundo preto padrão se não tiver imagem
+
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, w, h);
         }
@@ -1516,7 +1516,7 @@ class Boss extends Enemy {
 
     private final int bossSize = 64;
 
-    // --- Variáveis do Sistema de Dash ---
+
     private boolean isDashing = false;
     private long dashEndTime = 0;
     private long nextDashTime = 0;
@@ -1533,7 +1533,6 @@ class Boss extends Enemy {
         this.xpReward = 100 + (wave * 15);
         this.color = new Color(138, 43, 226);
 
-        // O boss já nasce preparado para dar o primeiro dash depois de 2 segundos
         this.nextDashTime = System.currentTimeMillis() + 2000;
 
         if (!loadedBoss) {
@@ -1565,49 +1564,49 @@ class Boss extends Enemy {
         long currentTime = System.currentTimeMillis();
         float xMove = 0, yMove = 0;
 
-        // Lógica de Movimento e Dash
+
         if (isDashing) {
             if (currentTime > dashEndTime) {
-                // Finaliza o dash
+
                 isDashing = false;
-                // Define o próximo dash para 3 a 5 segundos no futuro
+
                 nextDashTime = currentTime + 1000 + (long)(Math.random() * 1000);
             } else {
-                // Movimento do dash com velocidade 6x maior
+
                 float currentSpeed = speed * 6.0f;
                 xMove = dashDx * currentSpeed * (float) delta;
                 yMove = dashDy * currentSpeed * (float) delta;
 
-                // Adiciona um rastro de partículas durante o dash
+
                 game.particles.add(new Particle(x + bossSize / 2, y + bossSize / 2, color));
             }
         } else {
-            // Movimento normal seguindo o player
+
             if (x < p.x) xMove += speed * delta;
             if (x > p.x) xMove -= speed * delta;
             if (y < p.y) yMove += speed * delta;
             if (y > p.y) yMove -= speed * delta;
 
-            // Checa a distância entre o boss e o player
+
             float distToPlayer = (float) Math.hypot(p.x - x, p.y - y);
 
-            // Inicia o dash se o tempo passou e o player está dentro de um raio de engajamento
+
             if (currentTime > nextDashTime && distToPlayer < 400) {
                 isDashing = true;
-                dashEndTime = currentTime + 400; // Duração do dash (400ms)
+                dashEndTime = currentTime + 400;
 
-                // Trava a mira da direção (linha reta até o player)
+
                 if (distToPlayer > 0) {
                     dashDx = (p.x - x) / distToPlayer;
                     dashDy = (p.y - y) / distToPlayer;
                 }
 
-                // Opcional: Tremer um pouquinho a tela na arrancada para dar impacto
+
                 game.triggerShake(5);
             }
         }
 
-        // --- Animação ---
+
         boolean isMoving = false;
         if (Math.abs(xMove) > Math.abs(yMove)) {
             facing = (xMove > 0) ? CyberLegacy.Direction.RIGHT : CyberLegacy.Direction.LEFT;
@@ -1619,7 +1618,7 @@ class Boss extends Enemy {
 
         if (isMoving && !isShocked) {
             animationTimer += delta;
-            // Se estiver no dash, a perninha dele bate 2x mais rápido
+
             double currentAnimSpeed = isDashing ? animationSpeed / 2.0 : animationSpeed;
 
             if (animationTimer >= currentAnimSpeed) {
@@ -1632,23 +1631,23 @@ class Boss extends Enemy {
             animationTimer = 0;
         }
 
-        // Aplica a movimentação checando colisão
+
         if (!game.isSolid(x + xMove, y, bossSize, bossSize)) x += xMove;
         if (!game.isSolid(x, y + yMove, bossSize, bossSize)) y += yMove;
 
-        // --- Verificação de Dano e Hitbox ---
+
         Rectangle rBoss = new Rectangle((int) x, (int) y, bossSize, bossSize);
         Rectangle rPlayer = new Rectangle((int) p.x, (int) p.y, 32, 32);
 
-        // Se bater no player
+
         if (rBoss.intersects(rPlayer) && currentTime - lastHitTime > 1000 && !p.isDashing) {
-            // Se bateu durante o dash, pode dar um empurrão ou dano extra. Aqui mantive padrão:
+
             p.health -= damage;
             lastHitTime = currentTime;
             game.triggerShake(18);
         }
 
-        // Se o player (Katana) estiver atacando o boss
+
         if (p.isAttacking && p.pClass == ClassSelector.PlayerClass.KATANA) {
             Rectangle hitBlade = p.getMeleeHitbox();
             if (hitBlade != null && hitBlade.intersects(rBoss) && !isShocked) {
