@@ -15,6 +15,7 @@ import com.thurdas.cyberlegacy.audio.AudioManager;
 import com.thurdas.cyberlegacy.ui.UIManager;
 import com.thurdas.cyberlegacy.ui.ClassSelector;
 import com.thurdas.cyberlegacy.managers.WaveManager;
+import com.thurdas.cyberlegacy.database.DatabaseManager;
 import com.thurdas.cyberlegacy.entities.*;
 
 public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseWheelListener {
@@ -66,6 +67,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
     public WaveManager waveManager;
     public ClassSelector classSelector;
     public AudioManager audioManager;
+    public DatabaseManager databaseManager;
 
     public CyberLegacy(JFrame frame) {
         this.frame = frame;
@@ -78,6 +80,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
         waveManager = new WaveManager(this);
         classSelector = new ClassSelector(this);
         audioManager = new AudioManager();
+        databaseManager = new DatabaseManager();
 
         initMap(1);
         loadTextures();
@@ -407,12 +410,12 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
             }
         }
 
-        for (HealthOrbs item : items) item.render(g2d);
-        for (Enemy e : enemies) { e.renderShadow(g); e.render(g2d); }
+        for (HealthOrbs item : new ArrayList<>(items)) item.render(g2d);
+        for (Enemy e : new ArrayList<>(enemies)) { e.renderShadow(g); e.render(g2d); }
         if (player != null) { player.render(g2d); }
-        for (Projectile p : projectiles) p.render(g2d);
-        for (Particle p : particles) p.render(g2d);
-        for (com.thurdas.cyberlegacy.ui.FloatingText ft : floatingTexts) ft.render(g2d);
+        for (Projectile p : new ArrayList<>(projectiles)) p.render(g2d);
+        for (Particle p : new ArrayList<>(particles)) p.render(g2d);
+        for (com.thurdas.cyberlegacy.ui.FloatingText ft : new ArrayList<>(floatingTexts)) ft.render(g2d);
 
         if (player != null) drawLighting(g2d);
     }
