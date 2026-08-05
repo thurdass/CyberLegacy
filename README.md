@@ -1,77 +1,128 @@
-# 🎮 Cyber Legacy
+# Cyber Legacy
 
+<img width="1920" height="1080" alt="Cyber Legacy Gameplay" src="https://github.com/user-attachments/assets/d055c615-faa0-4aac-be52-6a5b57920dd6" />
 <p align="center">
-  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java">
-  <img src="https://img.shields.io/badge/Swing-UI-blue?style=for-the-badge" alt="Swing">
-  <img src="https://img.shields.io/badge/Graphics2D-Rendering-purple?style=for-the-badge" alt="Graphics2D">
-  <img src="https://img.shields.io/badge/Git-Version%20Control-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
+  <img src="https://img.shields.io/badge/Swing-007396?style=for-the-badge&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/Graphics2D-8E24AA?style=for-the-badge">
+  <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white">
+  <img src="https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white">
+  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
 </p>
 
-<p align="center">
-</p>
+Cyber Legacy is a 2D action game developed entirely from scratch in Java using Swing and Graphics2D.
 
-Cyber Legacy is a 2D action game developed from scratch in **Java**, using **Swing** and **Graphics2D**.
+The project was created as a practical learning experience focused on game development, object-oriented programming, software architecture, and data persistence. Instead of relying on a game engine, core systems are implemented manually.
 
-The project was created as a personal learning challenge to improve my skills in Java, object-oriented programming, game development, and software design by implementing the game's core systems manually instead of using a game engine.
+## Highlights
 
----
+* Built entirely from scratch
+* No game engine used
+* Custom game loop
+* Entity-based architecture
+* Enemy AI
+* Dynamic camera system
+* SQLite database integration
+* Persistent player statistics
+* Match history tracking
 
-# ✨ Features
+## Features
 
-- Multiple playable classes
-- Experience (XP) and leveling system
-- Enemy wave progression
-- Enemy AI
-- Dynamic camera with zoom
-- Particle effects
-- Floating combat text
-- Sprite animations
-- Sound effects and background music
-- Entity management
-- Collision detection
-- Game state management
+### Gameplay
 
----
+* Multiple playable classes
+* Experience (XP) and leveling system
+* Enemy wave progression
+* Enemy AI
+* Dynamic camera and zoom
+* Collision detection
+* Sprite animations
+* Particle effects
+* Floating combat text
+* Sound effects and background music
+* Game state management
 
-# 🏗️ Architecture
+### Technical Features
 
-Cyber Legacy was designed to reinforce core software engineering concepts through practical implementation.
+* Custom rendering pipeline using Graphics2D
+* Resource management system
+* Entity management system
+* SQLite persistence layer
+* Automatic database initialization
+* Automatic statistics tracking
+* Score history storage
 
-Main concepts used throughout the project:
+## Database
 
-- Object-Oriented Programming (OOP)
-- Custom Game Loop
-- Entity-based architecture
-- State management
-- Separation of responsibilities
-- Rendering pipeline with Graphics2D
-- Collision handling
-- Resource management (sprites, audio, fonts)
+Cyber Legacy uses SQLite to persist player progression and game statistics.
 
----
+### Stored Information
 
-# 🛠️ Tech Stack
+* Player profile
+* Total kills
+* Best score
+* Total experience
+* Match history
+* Play sessions
+* Achievement structure for future updates
 
-- Java
-- Java Swing
-- Graphics2D
-- IntelliJ IDEA
-- Git
+### Database Tables
 
----
+#### players
 
-# 🎮 Controls
+Stores player progression and statistics.
 
-| Action | Key |
-|---------|-----|
-| Move | **W A S D** |
-| Aim | **Mouse** |
-| Attack | **Left Mouse Button** |
-| Interact / Select | **Space / Enter** |
+#### scores
 
----
+Stores match history, score records, kills, levels, and phases reached.
 
-# 📂 Project Structure
+#### achievements
+
+Prepared for future achievement system implementation.
+
+### Automatic Features
+
+* Database creation on first launch
+* Table creation on startup
+* Automatic score saving
+* Automatic player tracking
+* Persistent statistics between sessions
+
+## Architecture
+
+The project applies several software engineering concepts:
+
+* Object-Oriented Programming (OOP)
+* Separation of Concerns
+* Entity-Based Design
+* State Management
+* Resource Management
+* Data Persistence
+* Collision Handling
+* Custom Rendering System
+
+## Tech Stack
+
+* Java 21
+* Java Swing
+* Graphics2D
+* SQLite
+* SQLite JDBC
+* Git
+* GitHub
+* IntelliJ IDEA
+
+## Controls
+
+| Action            | Key               |
+| ----------------- | ----------------- |
+| Move              | W A S D           |
+| Aim               | Mouse             |
+| Attack            | Left Mouse Button |
+| Interact / Select | Space / Enter     |
+
+## Project Structure
 
 ```text
 CyberLegacy/
@@ -83,58 +134,57 @@ CyberLegacy/
 ├── src/
 │   └── ...
 │
+├── lib/
+│
+├── cyberlegacy/
+│   └── data/
+│       └── cyberlegacy.db
+│
 └── docs/
 ```
 
----
+## Running the Project
 
-# 🚀 Running the Project
+### Requirements
 
-## Requirements
+* Java 21 or newer
+* IntelliJ IDEA (recommended)
 
-- Java 21 (or newer)
-- IntelliJ IDEA (recommended)
-
-## Clone the repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/thurdass/CyberLegacy.git
 ```
 
+### Run
+
 Open the project in IntelliJ IDEA and run the main game class.
 
----
+The SQLite database is automatically created during the first execution.
 
-# 📈 Roadmap
+## Roadmap
 
-- [ ] Boss battles
-- [ ] Inventory system
-- [ ] Equipment system
-- [ ] New maps
-- [ ] Additional enemy types
-- [ ] Save & Load system
-- [ ] Improved enemy AI
-- [ ] Performance improvements
+* [x] SQLite database integration
+* [x] Persistent player statistics
+* [x] Match history tracking
+* [ ] Achievement system
+* [ ] Boss battles
+* [ ] Inventory system
+* [ ] Equipment system
+* [ ] New maps
+* [ ] Additional enemy types
+* [ ] Improved enemy AI
+* [ ] Performance optimizations
 
----
+## Development Status
 
-# 📷 Screenshots
+Cyber Legacy is an active project and continues to evolve as new mechanics, systems, and improvements are implemented.
 
-Gameplay screenshots and GIFs will be added as the project evolves.
+The goal is to deepen knowledge in Java, software architecture, game development, and backend concepts through a real-world project.
 
----
-
-# 🎯 Purpose
-
-This project is part of my journey to become a Java developer.
-
-Besides learning game programming, it has been an opportunity to practice software architecture, clean code, problem solving, and object-oriented programming through a real-world project.
-
----
-
-# 👨‍💻 Author
+## Author
 
 **Arthur Almeida**
 
-- GitHub: https://github.com/thurdass
-- LinkedIn: https://www.linkedin.com/in/arthur-almeida-643a833b1/
+* GitHub: https://github.com/thurdass
+* LinkedIn: https://www.linkedin.com/in/arthur-almeida-643a833b1/
