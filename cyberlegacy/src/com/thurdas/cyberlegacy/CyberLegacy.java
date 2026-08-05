@@ -62,6 +62,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
     public ArrayList<HealthOrbs> items = new ArrayList<>();
     public ArrayList<Particle> particles = new ArrayList<>();
     public ArrayList<com.thurdas.cyberlegacy.ui.FloatingText> floatingTexts = new ArrayList<>();
+    public Portal portal = null;
 
     public UIManager uiManager;
     public WaveManager waveManager;
@@ -105,6 +106,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
         projectiles.clear();
         items.clear();
         particles.clear();
+        portal = null;
 
         triggerShake(20);
     }
@@ -344,6 +346,13 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
             if (ft.life <= 0) floatingTexts.remove(i);
         }
 
+        if (portal != null) {
+            portal.tick(delta);
+            if (portal.collidsWith(player.x, player.y, 32, 32)) {
+                changePhase(portal.getNextPhase());
+            }
+        }
+
         currentZoom += (targetZoom - currentZoom) * 0.1f;
         float screenCenterX = (getWidth() / 2f) / currentZoom;
         float screenCenterY = (getHeight() / 2f) / currentZoom;
@@ -413,6 +422,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
         for (HealthOrbs item : new ArrayList<>(items)) item.render(g2d);
         for (Enemy e : new ArrayList<>(enemies)) { e.renderShadow(g); e.render(g2d); }
         if (player != null) { player.render(g2d); }
+        if (portal != null) { portal.render(g2d); }
         for (Projectile p : new ArrayList<>(projectiles)) p.render(g2d);
         for (Particle p : new ArrayList<>(particles)) p.render(g2d);
         for (com.thurdas.cyberlegacy.ui.FloatingText ft : new ArrayList<>(floatingTexts)) ft.render(g2d);

@@ -3,6 +3,7 @@ package com.thurdas.cyberlegacy.managers;
 import com.thurdas.cyberlegacy.CyberLegacy;
 import com.thurdas.cyberlegacy.entities.Boss;
 import com.thurdas.cyberlegacy.entities.Enemy;
+import com.thurdas.cyberlegacy.entities.Portal;
 
 public class WaveManager {
     private CyberLegacy game;
@@ -30,18 +31,24 @@ public class WaveManager {
             }
         }
 
-        if (game.enemies.isEmpty()) {
+        if (game.enemies.isEmpty() && game.portal == null) {
             currentWave++;
             game.waveNotificationTimer = 140;
 
             int expectedPhase = (currentWave / 6) + 1;
 
             if (expectedPhase > game.currentPhase) {
-                game.changePhase(expectedPhase);
+                spawnPortal(expectedPhase);
+            } else {
+                spawnEnemiesForWave();
             }
-
-            spawnEnemiesForWave();
         }
+    }
+
+    private void spawnPortal(int nextPhase) {
+        float portalX = game.player.x;
+        float portalY = game.player.y - 100;
+        game.portal = new Portal(portalX, portalY, nextPhase);
     }
 
     private void spawnEnemiesForWave() {
