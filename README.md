@@ -122,25 +122,7 @@ The project applies several software engineering concepts:
 | Attack            | Left Mouse Button |
 | Interact / Select | Space / Enter     |
 
-## Project Structure
 
-```text
-CyberLegacy/
-├── assets/
-│   ├── audio/
-│   ├── sprites/
-│   └── fonts/
-│
-├── src/
-│   └── ...
-│
-├── lib/
-│
-├── cyberlegacy/
-│   └── data/
-│       └── cyberlegacy.db
-│
-└── docs/
 ```
 
 ## Running the Project
@@ -168,7 +150,7 @@ The SQLite database is automatically created during the first execution.
 * [x] Persistent player statistics
 * [x] Match history tracking
 * [ ] Achievement system
-* [ ] Boss battles
+* [x] Boss battles
 * [ ] Inventory system
 * [ ] Equipment system
 * [ ] New maps
