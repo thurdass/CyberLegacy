@@ -76,10 +76,70 @@ public class UIManager {
             long remainingTime = 3000 - (System.currentTimeMillis() - game.waveManager.countdownStartTime);
             int secondsLeft = (int) Math.ceil(remainingTime / 1000.0);
 
+            // Fundo escuro com efeito scan lines
+            g.setColor(new Color(0, 0, 0, 180));
+            g.fillRect(0, 0, w, h);
+            
+            // Scan lines
+            g.setColor(new Color(0, 255, 200, 20));
+            for (int i = 0; i < h; i += 4) {
+                g.drawLine(0, i, w, i);
+            }
+
             if (secondsLeft > 0) {
-                drawOutlinedText(g, "WAVES START IN: " + secondsLeft, h / 3, new Font("Impact", Font.BOLD, 70), new Color(255, 255, 0), w);
+                String numText = String.valueOf(secondsLeft);
+                Font largeFont = new Font("Courier New", Font.BOLD, 250);
+                g.setFont(largeFont);
+                FontMetrics fm = g.getFontMetrics();
+                int numX = (w - fm.stringWidth(numText)) / 2;
+                int numY = h / 2 + 80;
+
+                // Efeito glitch - renderizar múltiplas vezes com offsets aleatórios
+                for (int j = 0; j < 3; j++) {
+                    int offsetX = (int)((Math.random() - 0.5) * 15);
+                    int offsetY = (int)((Math.random() - 0.5) * 15);
+                    
+                    if (j == 0) {
+                        g.setColor(new Color(255, 0, 255, 150));  // Magenta
+                    } else if (j == 1) {
+                        g.setColor(new Color(0, 255, 255, 150));  // Cyan
+                    } else {
+                        g.setColor(new Color(255, 50, 150, 150)); // Rosa neon
+                    }
+                    g.drawString(numText, numX + offsetX, numY + offsetY);
+                }
+
+                // Número principal - amarelo neon
+                g.setColor(new Color(255, 255, 0, 255));
+                g.drawString(numText, numX, numY);
             } else {
-                drawOutlinedText(g, "FIGHT!", h / 3, new Font("Impact", Font.BOLD, 70), new Color(0, 255, 0), w);
+                String fightText = "FIGHT!";
+                Font fightFont = new Font("Courier New", Font.BOLD, 200);
+                g.setFont(fightFont);
+                FontMetrics fmFight = g.getFontMetrics();
+                int fightX = (w - fmFight.stringWidth(fightText)) / 2;
+                int fightY = h / 2 + 60;
+
+                // Glitch effect para FIGHT
+                for (int j = 0; j < 4; j++) {
+                    int offsetX = (int)((Math.random() - 0.5) * 20);
+                    int offsetY = (int)((Math.random() - 0.5) * 20);
+                    
+                    if (j == 0) {
+                        g.setColor(new Color(255, 0, 255, 120));  // Magenta
+                    } else if (j == 1) {
+                        g.setColor(new Color(0, 255, 255, 120));  // Cyan
+                    } else if (j == 2) {
+                        g.setColor(new Color(255, 50, 150, 120)); // Rosa neon
+                    } else {
+                        g.setColor(new Color(255, 100, 0, 120));  // Laranja
+                    }
+                    g.drawString(fightText, fightX + offsetX, fightY + offsetY);
+                }
+
+                // Texto principal FIGHT - verde neon
+                g.setColor(new Color(0, 255, 100, 255));
+                g.drawString(fightText, fightX, fightY);
             }
         }
         else if (game.waveNotificationTimer > 0) {
