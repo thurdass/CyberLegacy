@@ -27,7 +27,23 @@ The project was created as a practical learning experience focused on game devel
 * Persistent player statistics
 * Match history tracking
 
-## Features
+## Screenshots
+
+### Combat System
+<img width="1920" height="1080" alt="Captura de tela de 2026-08-05 22-19-09" src="https://github.com/user-attachments/assets/c83e314c-1bf9-48a0-8799-0ef655cbd4d6" />
+
+
+### Class Selection
+<img width="1920" height="1080" alt="Captura de tela de 2026-08-05 22-16-32" src="https://github.com/user-attachments/assets/f3cf6d9b-bd36-462e-b098-a18552eeeca1" />
+
+
+### Boss Battle
+<img width="1920" height="1080" alt="Captura de tela de 2026-08-05 22-20-28" src="https://github.com/user-attachments/assets/e833369c-a5ea-426c-b2b4-06068cdfe34c" />
+
+
+### Countdown
+<img width="1920" height="1080" alt="Captura de tela de 2026-08-05 22-20-53" src="https://github.com/user-attachments/assets/15852f0f-b2ab-4ced-81ac-dc627d870242" />
+
 
 ### Gameplay
 
@@ -155,8 +171,8 @@ The SQLite database is automatically created during the first execution.
 * [ ] Equipment system
 * [ ] New maps
 * [ ] Additional enemy types
-* [ ] Improved enemy AI
-* [ ] Performance optimizations
+* [x] Improved enemy AI
+* [x] Performance optimizations
 
 ## Development Status
 
