@@ -5,8 +5,10 @@ import java.io.File;
 
 public class AudioManager {
     private Clip musicClip;
+    private volatile boolean audioUnavailable;
 
     public void playMusic(String trackPath) {
+        if (audioUnavailable) return;
         try {
             if (musicClip != null && musicClip.isRunning()) {
                 musicClip.stop();
@@ -14,33 +16,39 @@ public class AudioManager {
             }
             File audioFile = new File(trackPath);
             if (audioFile.exists()) {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-                AudioInputStream convertedStream = convertAudioFormat(audioStream);
-                musicClip = AudioSystem.getClip();
-                musicClip.open(convertedStream);
-                musicClip.loop(Clip.LOOP_CONTINUOUSLY);
-                musicClip.start();
+                try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+                     AudioInputStream convertedStream = convertAudioFormat(audioStream)) {
+                    musicClip = AudioSystem.getClip();
+                    musicClip.open(convertedStream);
+                    musicClip.loop(Clip.LOOP_CONTINUOUSLY);
+                    musicClip.start();
+                }
             }
         } catch (Exception e) {
-            System.err.println("Erro ao tocar música: " + e.getMessage());
+            reportAudioUnavailable("música", e);
         }
     }
 
     public void playSound(String sfxPath) {
+        if (audioUnavailable) return;
         new Thread(() -> {
             try {
                 File audioFile = new File(sfxPath);
                 if (audioFile.exists()) {
-                    AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-                    AudioInputStream convertedStream = convertAudioFormat(audioStream);
-                    Clip clip = AudioSystem.getClip();
-                    clip.open(convertedStream);
-                    clip.start();
+                    try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+                         AudioInputStream convertedStream = convertAudioFormat(audioStream)) {
+                        Clip clip = AudioSystem.getClip();
+                        clip.addLineListener(event -> {
+                            if (event.getType() == LineEvent.Type.STOP) clip.close();
+                        });
+                        clip.open(convertedStream);
+                        clip.start();
+                    }
                 }
             } catch (Exception e) {
-                System.err.println("Erro ao tocar efeito sonoro: " + e.getMessage());
+                reportAudioUnavailable("efeito sonoro", e);
             }
-        }).start();
+        }, "cyberlegacy-sfx").start();
     }
 
     private AudioInputStream convertAudioFormat(AudioInputStream audioStream) {
@@ -60,5 +68,12 @@ public class AudioManager {
         }
 
         return AudioSystem.getAudioInputStream(targetFormat, audioStream);
+    }
+
+    private void reportAudioUnavailable(String type, Exception e) {
+        if (!audioUnavailable) {
+            audioUnavailable = true;
+            System.err.println("Áudio indisponível; " + type + " desativado: " + e.getMessage());
+        }
     }
 }

@@ -17,10 +17,14 @@ public class DatabaseManager {
                 dataDir.mkdirs();
             }
 
+            // Load explicitly so a misconfigured runtime classpath is reported clearly.
+            Class.forName("org.sqlite.JDBC");
             String url = "jdbc:sqlite:" + DB_PATH;
             connection = DriverManager.getConnection(url);
             createTables();
             System.out.println("Database initialized successfully");
+        } catch (ClassNotFoundException e) {
+            System.err.println("SQLite JDBC driver not found. Add lib/sqlite-jdbc-3.44.0.0.jar to the runtime classpath.");
         } catch (SQLException e) {
             System.err.println("Error initializing database: " + e.getMessage());
         }
