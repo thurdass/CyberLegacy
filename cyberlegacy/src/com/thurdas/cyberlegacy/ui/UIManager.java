@@ -6,6 +6,7 @@ import com.thurdas.cyberlegacy.ui.ClassSelector;
 import com.thurdas.cyberlegacy.ui.FloatingText;
 
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 
 public class UIManager {
@@ -33,7 +34,7 @@ public class UIManager {
         }
     }
 
-    // --- HUD / menu rendering methods (copied from original file) ---
+
 
     private void drawHUD(Graphics2D g, int w, int h) {
         int baseX = 120;
@@ -73,74 +74,7 @@ public class UIManager {
         }
 
         if (game.waveManager.isCountingDown) {
-            long remainingTime = 3000 - (System.currentTimeMillis() - game.waveManager.countdownStartTime);
-            int secondsLeft = (int) Math.ceil(remainingTime / 1000.0);
-
-            // Fundo escuro com efeito scan lines
-            g.setColor(new Color(0, 0, 0, 180));
-            g.fillRect(0, 0, w, h);
-            
-            // Scan lines
-            g.setColor(new Color(0, 255, 200, 20));
-            for (int i = 0; i < h; i += 4) {
-                g.drawLine(0, i, w, i);
-            }
-
-            if (secondsLeft > 0) {
-                String numText = String.valueOf(secondsLeft);
-                Font largeFont = new Font("Courier New", Font.BOLD, 250);
-                g.setFont(largeFont);
-                FontMetrics fm = g.getFontMetrics();
-                int numX = (w - fm.stringWidth(numText)) / 2;
-                int numY = h / 2 + 80;
-
-                // Efeito glitch - renderizar múltiplas vezes com offsets aleatórios
-                for (int j = 0; j < 3; j++) {
-                    int offsetX = (int)((Math.random() - 0.5) * 15);
-                    int offsetY = (int)((Math.random() - 0.5) * 15);
-                    
-                    if (j == 0) {
-                        g.setColor(new Color(255, 0, 255, 150));  // Magenta
-                    } else if (j == 1) {
-                        g.setColor(new Color(0, 255, 255, 150));  // Cyan
-                    } else {
-                        g.setColor(new Color(255, 50, 150, 150)); // Rosa neon
-                    }
-                    g.drawString(numText, numX + offsetX, numY + offsetY);
-                }
-
-                // Número principal - amarelo neon
-                g.setColor(new Color(255, 255, 0, 255));
-                g.drawString(numText, numX, numY);
-            } else {
-                String fightText = "FIGHT!";
-                Font fightFont = new Font("Courier New", Font.BOLD, 200);
-                g.setFont(fightFont);
-                FontMetrics fmFight = g.getFontMetrics();
-                int fightX = (w - fmFight.stringWidth(fightText)) / 2;
-                int fightY = h / 2 + 60;
-
-                // Glitch effect para FIGHT
-                for (int j = 0; j < 4; j++) {
-                    int offsetX = (int)((Math.random() - 0.5) * 20);
-                    int offsetY = (int)((Math.random() - 0.5) * 20);
-                    
-                    if (j == 0) {
-                        g.setColor(new Color(255, 0, 255, 120));  // Magenta
-                    } else if (j == 1) {
-                        g.setColor(new Color(0, 255, 255, 120));  // Cyan
-                    } else if (j == 2) {
-                        g.setColor(new Color(255, 50, 150, 120)); // Rosa neon
-                    } else {
-                        g.setColor(new Color(255, 100, 0, 120));  // Laranja
-                    }
-                    g.drawString(fightText, fightX + offsetX, fightY + offsetY);
-                }
-
-                // Texto principal FIGHT - verde neon
-                g.setColor(new Color(0, 255, 100, 255));
-                g.drawString(fightText, fightX, fightY);
-            }
+            drawGameStartCountdown(g, w, h);
         }
         else if (game.waveNotificationTimer > 0) {
             g.setFont(new Font("Impact", Font.BOLD, 48));
@@ -179,6 +113,157 @@ public class UIManager {
                 drawOutlinedText(g, "> PRESS ENTER TO OVERRIDE / RESTART <", h / 2 + 120, new Font("Impact", Font.PLAIN, 28), new Color(0, 255, 255), w);
             }
         }
+    }
+
+    private void drawGameStartCountdown(Graphics2D g, int w, int h) {
+        final long duration = 3000;
+
+        long elapsed = Math.min(
+                duration,
+                System.currentTimeMillis() - game.waveManager.countdownStartTime
+        );
+
+        int secondsLeft = Math.max(
+                1,
+                (int) Math.ceil((duration - elapsed) / 1000.0)
+        );
+
+        boolean bossWave = game.waveManager.currentWave % 5 == 0;
+
+        Graphics2D overlay = (Graphics2D) g.create();
+        overlay.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+
+        // Escurece a tela
+        overlay.setColor(new Color(0, 0, 0, 180));
+        overlay.fillRect(0, 0, w, h);
+
+        // Borda piscando
+        float blink = (float) Math.abs(
+                Math.sin(System.currentTimeMillis() * 0.008)
+        );
+
+        Color alertColor = bossWave
+                ? new Color(255, 40, 40)
+                : new Color(255, 180, 0);
+
+        overlay.setStroke(
+                new BasicStroke(6f + blink * 4f)
+        );
+
+        overlay.setColor(
+                new Color(
+                        alertColor.getRed(),
+                        alertColor.getGreen(),
+                        alertColor.getBlue(),
+                        (int) (100 + blink * 155)
+                )
+        );
+
+        overlay.drawRect(10, 10, w - 20, h - 20);
+
+        // Título principal
+        String title = bossWave
+                ? "BOSS ALERT"
+                : "WARNING";
+
+        Font titleFont = new Font(
+                "Impact",
+                Font.BOLD,
+                54
+        );
+
+        drawOutlinedText(
+                overlay,
+                title,
+                h / 4,
+                titleFont,
+                alertColor,
+                w
+        );
+
+        // Texto da wave
+        String subtitle = bossWave
+                ? "WAVE INCOMING"
+                : "WAVE " + game.waveManager.currentWave + " INCOMING";
+
+        Font subFont = new Font(
+                "Segoe UI",
+                Font.BOLD,
+                26
+        );
+
+        drawCenteredText(
+                overlay,
+                subtitle,
+                h / 4 + 60,
+                subFont,
+                Color.WHITE,
+                w
+        );
+
+        // Número pulsando
+        float pulse = (float)
+                Math.sin(elapsed * 0.015);
+
+        int fontSize = (int)
+                (140 + pulse * 15);
+
+        Font numberFont = new Font(
+                "Impact",
+                Font.BOLD,
+                fontSize
+        );
+
+        overlay.setFont(numberFont);
+
+        String number = String.valueOf(secondsLeft);
+
+        FontMetrics fm = overlay.getFontMetrics();
+
+        int x = (w - fm.stringWidth(number)) / 2;
+        int y = h / 2 + fm.getAscent() / 2;
+
+        // Glow
+        overlay.setColor(
+                new Color(
+                        alertColor.getRed(),
+                        alertColor.getGreen(),
+                        alertColor.getBlue(),
+                        100
+                )
+        );
+
+        overlay.drawString(number, x - 4, y);
+        overlay.drawString(number, x + 4, y);
+        overlay.drawString(number, x, y - 4);
+        overlay.drawString(number, x, y + 4);
+
+        // Sombra
+        overlay.setColor(Color.BLACK);
+        overlay.drawString(number, x + 5, y + 5);
+
+        // Número principal
+        overlay.setColor(Color.WHITE);
+        overlay.drawString(number, x, y);
+
+        // Rodapé
+        String footer = bossWave
+                ? "PREPARE FOR TERMINATION"
+                : "GO";
+
+        drawCenteredText(
+                overlay,
+                footer,
+                h - 120,
+                new Font("Segoe UI", Font.BOLD, 22),
+                alertColor,
+                w
+        );
+
+        overlay.dispose();
     }
 
     private void drawSlantedBar(Graphics2D g, int x, int y, int width, int height, int slant, Color bg, Color fg, float percentage) {
