@@ -246,27 +246,29 @@ public class Player {
                 if (isAttacking) {
 
                     long elapsed = System.currentTimeMillis() - lastAttack;
-                    int attackStep = (int)((elapsed / 150.0f) * 5);
+                    int attackStep = (int)((elapsed / 150.0f) * 7);
 
-                    if (attackStep > 4) attackStep = 4;
+                    if (attackStep > 6) attackStep = 6;
 
                     switch (facing) {
                         case RIGHT:
-                            frameIndex = 6 + attackStep;
-                            break;
-                        case LEFT:
-                            frameIndex = 6 + attackStep;
+                            frameIndex = 3 + attackStep;
                             flip = true;
                             break;
+                        case LEFT:
+                            frameIndex = 3 + attackStep;
+                            break;
                         case UP:
-                            frameIndex = 12;
+                            frameIndex = 13;
                             break;
                         case DOWN:
-                            frameIndex = 1;
+                            frameIndex = 10;
                             break;
                     }
 
                 } else {
+
+                    int[] sideFrames = {15,16,15,16};
 
                     switch (facing) {
                         case DOWN:
@@ -278,13 +280,11 @@ public class Player {
                             frameIndex = upFrames[animStep];
                             break;
                         case RIGHT:
-                            int[] rightFrames = {14,15,16,15};
-                            frameIndex = rightFrames[animStep];
+                            frameIndex = sideFrames[animStep];
+                            flip = true;
                             break;
                         case LEFT:
-                            int[] leftFrames = {14,15,16,15};
-                            frameIndex = leftFrames[animStep];
-                            flip = true;
+                            frameIndex = sideFrames[animStep];
                             break;
                     }
                 }

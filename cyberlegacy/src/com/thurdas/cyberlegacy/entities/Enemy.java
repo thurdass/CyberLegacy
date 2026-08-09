@@ -47,6 +47,14 @@ public class Enemy {
         this.zombieType = (int) (Math.random() * 4);
     }
 
+    public Rectangle getCollisionBounds() {
+        return new Rectangle((int) x, (int) y, 32, 32);
+    }
+
+    public boolean isReadyToRemove() {
+        return health <= 0;
+    }
+
     private static void loadSprites() {
         loaded = true;
         String[] files = {
@@ -71,6 +79,8 @@ public class Enemy {
     }
 
     public void tick(CyberLegacy game, Player p, double delta) {
+        if (health <= 0) return;
+
         if (isShocked) {
             if (System.currentTimeMillis() - lastHitTime > 150) isShocked = false;
             else return;
@@ -107,7 +117,7 @@ public class Enemy {
         if (!game.isSolid(x + xMove, y, 32, 32)) x += xMove;
         if (!game.isSolid(x, y + yMove, 32, 32)) y += yMove;
 
-        Rectangle rEnemy = new Rectangle((int) x, (int) y, 32, 32);
+        Rectangle rEnemy = getCollisionBounds();
         Rectangle rPlayer = new Rectangle((int) p.x, (int) p.y, 32, 32);
 
         if (rEnemy.intersects(rPlayer) && System.currentTimeMillis() - lastHitTime > 1000 && !p.isDashing) {
@@ -125,6 +135,8 @@ public class Enemy {
     }
 
     public void takeDamage(int dmg, CyberLegacy game) {
+        if (health <= 0) return;
+
         boolean isCrit = Math.random() < 0.2;
         int finalDmg = isCrit ? (int) (dmg * 1.5) : dmg;
 

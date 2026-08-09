@@ -30,7 +30,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
     public int currentPhase = 1;
 
     public BufferedImage titleScreenTexture;
-    public BufferedImage creditsScreenTexture; // Nova textura de fundo para os créditos
+    public BufferedImage creditsScreenTexture;
 
     public enum State { MENU, CREDITS, CLASS_SELECTION, PLAYING, PAUSE, GAME_OVER, VICTORY }
     public enum Direction { UP, DOWN, LEFT, RIGHT }
@@ -316,7 +316,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
         for (int i = enemies.size() - 1; i >= 0; i--) {
             Enemy e = enemies.get(i);
             e.tick(this, player, delta);
-            if (e.health <= 0) {
+            if (e.isReadyToRemove()) {
                 player.addXp(e.xpReward);
                 player.kills++;
                 if (Math.random() < 0.3) items.add(new HealthOrbs(e.x, e.y, HealthOrbs.Type.HEALTH));

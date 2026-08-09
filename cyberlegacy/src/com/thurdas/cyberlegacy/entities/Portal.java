@@ -1,133 +1,110 @@
 package com.thurdas.cyberlegacy.entities;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
+import java.io.File;
+import java.io.InputStream;
 
 public class Portal {
     public float x, y;
     public float radius = 45;
-    private float rotation = 0;
     private int nextPhase;
-    private static final float ROTATION_SPEED = 1.5f;
-    private static final int STAR_COUNT = 60;
-    private float[] stars;
-    private Random random;
+
+    private static final int FRAME_WIDTH = 80;
+    private static final int FRAME_HEIGHT = 80;
+    private static final int FRAME_COUNT = 37;
+    private static final double FRAME_DURATION = 0.08;
+
+    private static BufferedImage spriteSheet;
+    private static boolean spritesLoaded = false;
+
+    private int animationFrame = 0;
+    private double animationTimer = 0.0;
 
     public Portal(float x, float y, int nextPhase) {
         this.x = x;
         this.y = y;
         this.nextPhase = nextPhase;
-        this.random = new Random();
-        this.stars = new float[STAR_COUNT * 3];
-        
-        // Gerar posições das estrelas (x, y, brightness)
-        for (int i = 0; i < STAR_COUNT; i++) {
-            float angle = random.nextFloat() * (float)(Math.PI * 2);
-            float distance = radius * 0.5f + random.nextFloat() * radius * 1.2f;
-            stars[i * 3] = (float)(Math.cos(angle) * distance);
-            stars[i * 3 + 1] = (float)(Math.sin(angle) * distance);
-            stars[i * 3 + 2] = 50 + random.nextFloat() * 200;
+
+        if (!spritesLoaded) loadSprites();
+    }
+
+    private static void loadSprites() {
+        spritesLoaded = true;
+        try {
+            File file = new File("cyberlegacy/assets/img/portal.png");
+            if (file.exists()) spriteSheet = ImageIO.read(file);
+
+            if (spriteSheet == null) {
+                try (InputStream resource = Portal.class.getClassLoader()
+                        .getResourceAsStream("cyberlegacy/assets/img/portal.png")) {
+                    if (resource != null) spriteSheet = ImageIO.read(resource);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar sprite do portal: " + e.getMessage());
         }
     }
 
     public void tick(double delta) {
-        rotation += ROTATION_SPEED;
-        if (rotation >= 360) rotation -= 360;
+        animationTimer += delta;
+        while (animationTimer >= FRAME_DURATION) {
+            animationTimer -= FRAME_DURATION;
+            animationFrame = (animationFrame + 1) % FRAME_COUNT;
+        }
     }
 
     public void render(Graphics2D g2d) {
-        var oldTransform = g2d.getTransform();
-        g2d.translate(x + radius, y + radius);
-        g2d.rotate(Math.toRadians(rotation));
+        Graphics2D pixelGraphics = (Graphics2D) g2d.create();
+        pixelGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        pixelGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        pixelGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
-        // Fundo preto profundo (espaço)
-        g2d.setColor(new Color(0, 0, 5, 100));
-        g2d.fillOval(-(int)(radius * 1.3f), -(int)(radius * 1.3f), (int)(radius * 2.6f), (int)(radius * 2.6f));
+        int drawX = Math.round(x + radius - FRAME_WIDTH / 2.0f);
+        int drawY = Math.round(y + radius - FRAME_HEIGHT / 2.0f);
 
-        // Braços espirais da galáxia (3 camadas de braços)
-        drawSpiralArm(g2d, 0, new Color(180, 100, 200, 120), radius * 1.0f);
-        drawSpiralArm(g2d, 120, new Color(150, 150, 255, 100), radius * 1.0f);
-        drawSpiralArm(g2d, 240, new Color(100, 200, 255, 100), radius * 1.0f);
-
-        // Disco da galáxia com gradiente
-        for (int layer = 8; layer > 0; layer--) {
-            float layerRadius = radius * (layer / 8.0f);
-            int alpha = (int)(200 * (1.0f - (layer / 8.0f)));
-            
-            if (layer % 2 == 0) {
-                g2d.setColor(new Color(150, 80, 200, alpha)); // Roxo/Magenta
-            } else {
-                g2d.setColor(new Color(100, 150, 255, alpha)); // Azul/Cyan
+        if (spriteSheet != null) {
+            try {
+                BufferedImage frame = spriteSheet.getSubimage(
+                        animationFrame * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT);
+                pixelGraphics.drawImage(frame, drawX, drawY, null);
+            } catch (RasterFormatException e) {
+                renderFallback(pixelGraphics, drawX, drawY);
             }
-            g2d.fillOval(-(int)layerRadius, -(int)layerRadius, (int)(layerRadius * 2), (int)(layerRadius * 2));
+        } else {
+            renderFallback(pixelGraphics, drawX, drawY);
         }
 
-        // Estrelas
-        for (int i = 0; i < STAR_COUNT; i++) {
-            float sx = stars[i * 3];
-            float sy = stars[i * 3 + 1];
-            float brightness = stars[i * 3 + 2];
-            
-            // Pulsação leve das estrelas
-            brightness = Math.min(255, brightness + (float)Math.sin(rotation * 0.05f + i) * 50);
-            
-            g2d.setColor(new Color(255, 255, 255, (int)brightness));
-            int starSize = brightness > 150 ? 2 : 1;
-            g2d.fillOval((int)sx - starSize, (int)sy - starSize, starSize * 2, starSize * 2);
-        }
+        pixelGraphics.dispose();
 
-        // Núcleo brilhante (buraco negro/centro galáctico)
-        for (int glow = 3; glow > 0; glow--) {
-            g2d.setColor(new Color(255, 200, 100, (int)(100 - glow * 30)));
-            g2d.fillOval(-(glow * 2), -(glow * 2), glow * 4, glow * 4);
-        }
-        
-        g2d.setColor(new Color(255, 220, 150, 255));
-        g2d.fillOval(-2, -2, 4, 4);
-
-        g2d.setTransform(oldTransform);
-
-        // Texto "PHASE X"
         g2d.setColor(new Color(150, 220, 255, 255));
         g2d.setFont(new Font("Courier New", Font.BOLD, 14));
         String text = "PHASE " + nextPhase;
         FontMetrics fm = g2d.getFontMetrics();
-        int textX = (int)(x + radius - fm.stringWidth(text) / 2);
-        int textY = (int)(y + radius * 2 + 25);
+        int textX = (int) (x + radius - fm.stringWidth(text) / 2.0f);
+        int textY = (int) (y + radius * 2 + 25);
         g2d.drawString(text, textX, textY);
     }
 
-    private void drawSpiralArm(Graphics2D g2d, float startAngle, Color color, float maxRadius) {
-        g2d.setColor(color);
-        g2d.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        
-        float prevX = 0, prevY = 0;
-        for (int i = 0; i <= 30; i++) {
-            float t = i / 30.0f;
-            float angle = startAngle + t * (float)(Math.PI * 4);
-            float dist = maxRadius * t;
-            
-            float newX = (float)(Math.cos(angle) * dist);
-            float newY = (float)(Math.sin(angle) * dist);
-            
-            if (i > 0) {
-                g2d.drawLine((int)prevX, (int)prevY, (int)newX, (int)newY);
-            }
-            prevX = newX;
-            prevY = newY;
-        }
+    private void renderFallback(Graphics2D g2d, int drawX, int drawY) {
+        g2d.setColor(new Color(40, 0, 120, 220));
+        g2d.fillOval(drawX, drawY, FRAME_WIDTH, FRAME_HEIGHT);
+        g2d.setColor(new Color(192, 64, 248, 230));
+        g2d.fillOval(drawX + 12, drawY + 12, FRAME_WIDTH - 24, FRAME_HEIGHT - 24);
     }
 
     public boolean collidsWith(float px, float py, int width, int height) {
-        float px_center = px + width / 2.0f;
-        float py_center = py + height / 2.0f;
+        float pxCenter = px + width / 2.0f;
+        float pyCenter = py + height / 2.0f;
         float portalCenterX = x + radius;
         float portalCenterY = y + radius;
-        
-        float dx = px_center - portalCenterX;
-        float dy = py_center - portalCenterY;
+
+        float dx = pxCenter - portalCenterX;
+        float dy = pyCenter - portalCenterY;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
-        
+
         return distance < (radius + width / 2.0f);
     }
 

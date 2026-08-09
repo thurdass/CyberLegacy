@@ -17,7 +17,6 @@ public class DatabaseManager {
                 dataDir.mkdirs();
             }
 
-            // Load explicitly so a misconfigured runtime classpath is reported clearly.
             Class.forName("org.sqlite.JDBC");
             String url = "jdbc:sqlite:" + DB_PATH;
             connection = DriverManager.getConnection(url);

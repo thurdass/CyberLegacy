@@ -4,6 +4,7 @@ import com.thurdas.cyberlegacy.CyberLegacy;
 import com.thurdas.cyberlegacy.entities.Boss;
 import com.thurdas.cyberlegacy.entities.Enemy;
 import com.thurdas.cyberlegacy.entities.Portal;
+import com.thurdas.cyberlegacy.entities.VehicleEnemy;
 
 public class WaveManager {
     private CyberLegacy game;
@@ -73,6 +74,9 @@ public class WaveManager {
             enemiesToSpawn /= 2;
         }
 
+        enemiesToSpawn = Math.max(1, enemiesToSpawn - 1);
+        spawnVehicle();
+
         for (int i = 0; i < enemiesToSpawn; i++) {
             float spawnX = (float) (game.player.x + (Math.random() * 600 - 300));
             float spawnY = (float) (game.player.y + (Math.random() * 600 - 300));
@@ -81,6 +85,19 @@ public class WaveManager {
                 game.enemies.add(new Enemy(spawnX, spawnY, currentWave));
             } else {
                 i--;
+            }
+        }
+    }
+
+    private void spawnVehicle() {
+        boolean vehicleSpawned = false;
+        while (!vehicleSpawned) {
+            float spawnX = (float) (game.player.x + (Math.random() * 700 - 350));
+            float spawnY = (float) (game.player.y + (Math.random() * 500 - 250));
+
+            if (!game.isSolid(spawnX, spawnY, VehicleEnemy.COLLISION_WIDTH, VehicleEnemy.COLLISION_HEIGHT)) {
+                game.enemies.add(new VehicleEnemy(spawnX, spawnY, currentWave));
+                vehicleSpawned = true;
             }
         }
     }

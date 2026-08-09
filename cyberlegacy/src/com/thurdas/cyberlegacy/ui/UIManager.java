@@ -136,11 +136,9 @@ public class UIManager {
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
 
-        // Escurece a tela
         overlay.setColor(new Color(0, 0, 0, 180));
         overlay.fillRect(0, 0, w, h);
 
-        // Borda piscando
         float blink = (float) Math.abs(
                 Math.sin(System.currentTimeMillis() * 0.008)
         );
@@ -164,7 +162,6 @@ public class UIManager {
 
         overlay.drawRect(10, 10, w - 20, h - 20);
 
-        // Título principal
         String title = bossWave
                 ? "BOSS ALERT"
                 : "WARNING";
@@ -184,7 +181,6 @@ public class UIManager {
                 w
         );
 
-        // Texto da wave
         String subtitle = bossWave
                 ? "WAVE INCOMING"
                 : "WAVE " + game.waveManager.currentWave + " INCOMING";
@@ -204,7 +200,6 @@ public class UIManager {
                 w
         );
 
-        // Número pulsando
         float pulse = (float)
                 Math.sin(elapsed * 0.015);
 
@@ -226,7 +221,6 @@ public class UIManager {
         int x = (w - fm.stringWidth(number)) / 2;
         int y = h / 2 + fm.getAscent() / 2;
 
-        // Glow
         overlay.setColor(
                 new Color(
                         alertColor.getRed(),
@@ -241,15 +235,12 @@ public class UIManager {
         overlay.drawString(number, x, y - 4);
         overlay.drawString(number, x, y + 4);
 
-        // Sombra
         overlay.setColor(Color.BLACK);
         overlay.drawString(number, x + 5, y + 5);
 
-        // Número principal
         overlay.setColor(Color.WHITE);
         overlay.drawString(number, x, y);
 
-        // Rodapé
         String footer = bossWave
                 ? "PREPARE FOR TERMINATION"
                 : "GO";

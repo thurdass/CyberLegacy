@@ -11,6 +11,10 @@ import java.io.File;
 public class ClassSelector {
     public enum PlayerClass { KATANA, SHOOTER, HACKER }
 
+    private static final int MENU_CARD_WIDTH = 150;
+    private static final int SWORDER_FRAME_COUNT = 18;
+    private static final int SWORDER_MENU_SCALE = 2;
+
     private CyberLegacy game;
     private int selectedIndex = 0;
     private long lastInputTimer = 0;
@@ -27,7 +31,7 @@ public class ClassSelector {
             File fKatana = new File("cyberlegacy/assets/img/sworder.png");
             if (fKatana.exists()) {
                 BufferedImage sheet = ImageIO.read(fKatana);
-                int sw = sheet.getWidth() / 18;
+                int sw = sheet.getWidth() / SWORDER_FRAME_COUNT;
                 int sh = sheet.getHeight();
                 menuSprites[0] = sheet.getSubimage(0, 0, sw, sh);
             }
@@ -101,13 +105,11 @@ public class ClassSelector {
             g.fillRoundRect(x, y, 150, 200, 10, 10);
 
             if (menuSprites[i] != null) {
-                int scale = 3;
+                int scale = (i == 0) ? SWORDER_MENU_SCALE : 3;
                 int imgW = menuSprites[i].getWidth() * scale;
                 int imgH = menuSprites[i].getHeight() * scale;
-                int drawX = x + (150 - imgW) / 2;
-                int[] yOffsets = {35, 0, 0};
-                int currentOffset = yOffsets[i];
-                int drawY = y + 25 - currentOffset;
+                int drawX = x + (MENU_CARD_WIDTH - imgW) / 2;
+                int drawY = y + (i == 0 ? 10 : 25);
 
                 g.drawImage(menuSprites[i], drawX, drawY, imgW, imgH, null);
             } else {
