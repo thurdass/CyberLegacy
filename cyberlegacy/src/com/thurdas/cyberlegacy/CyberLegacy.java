@@ -18,7 +18,7 @@ import com.thurdas.cyberlegacy.managers.WaveManager;
 import com.thurdas.cyberlegacy.database.DatabaseManager;
 import com.thurdas.cyberlegacy.entities.*;
 
-public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseWheelListener {
+public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseListener, MouseWheelListener {
 
     public final int TILE_SIZE = 32;
 
@@ -53,6 +53,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
     public long lastMenuInputTime = 0;
 
     public boolean[] keys = new boolean[256];
+    public boolean mouseAttack = false;
 
     public int[][] map;
 
@@ -73,6 +74,7 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
     public CyberLegacy(JFrame frame) {
         this.frame = frame;
         this.addKeyListener(this);
+        this.addMouseListener(this);
         this.addMouseWheelListener(this);
         this.setFocusable(true);
         this.setPreferredSize(new Dimension(1280, 720));
@@ -480,6 +482,25 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseW
 
     @Override
     public void keyTyped(KeyEvent e) {}
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) mouseAttack = true;
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) mouseAttack = false;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {

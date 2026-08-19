@@ -201,7 +201,8 @@ public class Player {
     }
 
     private void handleCombat(CyberLegacy game) {
-        if (game.keys[KeyEvent.VK_SPACE] && System.currentTimeMillis() - lastAttack > attackCooldown) {
+        boolean attackInput = game.keys[KeyEvent.VK_SPACE] || game.mouseAttack;
+        if (attackInput && System.currentTimeMillis() - lastAttack > attackCooldown) {
             lastAttack = System.currentTimeMillis();
             isAttacking = true;
 
