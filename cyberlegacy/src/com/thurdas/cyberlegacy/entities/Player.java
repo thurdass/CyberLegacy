@@ -87,16 +87,37 @@ public class Player {
         vehicleProjectileLoaded = true;
 
         try {
-            File projectileFile = new File("cyberlegacy/assets/img/vehicle-projectile.png");
-            if (projectileFile.exists()) {
-                vehicleProjectileSprite = ImageIO.read(projectileFile);
+            String[] filePaths = {
+                    "cyberlegacy/assets/img/vehicle-projectile.png",
+                    "assets/img/vehicle-projectile.png",
+                    "../cyberlegacy/assets/img/vehicle-projectile.png"
+            };
+            for (String filePath : filePaths) {
+                File projectileFile = new File(filePath);
+                if (projectileFile.exists()) {
+                    vehicleProjectileSprite = ImageIO.read(projectileFile);
+                    break;
+                }
             }
 
             if (vehicleProjectileSprite == null) {
-                try (InputStream resource = Player.class.getClassLoader()
-                        .getResourceAsStream("cyberlegacy/assets/img/vehicle-projectile.png")) {
-                    if (resource != null) vehicleProjectileSprite = ImageIO.read(resource);
+                String[] resourcePaths = {
+                        "cyberlegacy/assets/img/vehicle-projectile.png",
+                        "assets/img/vehicle-projectile.png"
+                };
+                for (String resourcePath : resourcePaths) {
+                    try (InputStream resource = Player.class.getClassLoader()
+                            .getResourceAsStream(resourcePath)) {
+                        if (resource != null) {
+                            vehicleProjectileSprite = ImageIO.read(resource);
+                            break;
+                        }
+                    }
                 }
+            }
+
+            if (vehicleProjectileSprite == null) {
+                System.err.println("Sprite vehicle-projectile.png não encontrado.");
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar sprite do tiro do shooter: " + e.getMessage());
