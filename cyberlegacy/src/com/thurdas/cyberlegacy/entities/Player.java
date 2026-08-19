@@ -8,8 +8,12 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 
 public class Player {
+    private static BufferedImage vehicleProjectileSprite;
+    private static boolean vehicleProjectileLoaded = false;
+
     private BufferedImage spriteSheet;
     private int animationFrame = 0;
 
@@ -67,10 +71,35 @@ public class Player {
             e.printStackTrace();
         }
 
+        if (pClass == ClassSelector.PlayerClass.SHOOTER) {
+            loadVehicleProjectileSprite();
+        }
+
         switch (pClass) {
             case KATANA:  maxHealth = 360; health = 200; speed = 220; damage = 80; attackCooldown = 450; break;
             case SHOOTER: maxHealth = 300;  health = 150;  speed = 250; damage = 40; attackCooldown = 150; break;
             case HACKER:  maxHealth = 230;  health = 100;  speed = 300; damage = 90; attackCooldown = 600; break;
+        }
+    }
+
+    private static void loadVehicleProjectileSprite() {
+        if (vehicleProjectileLoaded) return;
+        vehicleProjectileLoaded = true;
+
+        try {
+            File projectileFile = new File("cyberlegacy/assets/img/vehicle-projectile.png");
+            if (projectileFile.exists()) {
+                vehicleProjectileSprite = ImageIO.read(projectileFile);
+            }
+
+            if (vehicleProjectileSprite == null) {
+                try (InputStream resource = Player.class.getClassLoader()
+                        .getResourceAsStream("cyberlegacy/assets/img/vehicle-projectile.png")) {
+                    if (resource != null) vehicleProjectileSprite = ImageIO.read(resource);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar sprite do tiro do shooter: " + e.getMessage());
         }
     }
 
@@ -178,7 +207,10 @@ public class Player {
 
             switch (pClass) {
                 case SHOOTER:
-                    game.projectiles.add(new Projectile(x, y, facing, true, damage, 600.0f, new Color(255, 255, 0), 6));
+                    game.projectiles.add(new Projectile(
+                            x, y, facing, true, damage, 600.0f,
+                            new Color(255, 255, 0), 6, 32, 32,
+                            vehicleProjectileSprite));
                     game.audioManager.playSound("cyberlegacy/assets/sfx/shoot.wav");
                     break;
                 case HACKER:
