@@ -60,6 +60,7 @@ public class VehicleEnemy extends Enemy {
     private double animationTimer = 0.0;
     private boolean wasMoving = false;
     private boolean destructionFinished = false;
+    private boolean destructionEffectTriggered = false;
 
     private CyberLegacy.Direction facing = CyberLegacy.Direction.RIGHT;
     private long lastShotAt = 0L;
@@ -115,14 +116,14 @@ public class VehicleEnemy extends Enemy {
 
     @Override
     public void tick(CyberLegacy game, Player p, double delta) {
-        if (p == null) return;
-
         long now = System.currentTimeMillis();
 
         if (health <= 0) {
-            updateDestructionAnimation(delta);
+            updateDestructionAnimation(game, delta);
             return;
         }
+
+        if (p == null) return;
 
         if (isShocked && now - lastHitTime > 150L) isShocked = false;
 
@@ -212,7 +213,7 @@ public class VehicleEnemy extends Enemy {
         }
 
         if (health <= 0) {
-            updateDestructionAnimation(delta);
+            updateDestructionAnimation(game, delta);
             return;
         }
 
@@ -269,19 +270,40 @@ public class VehicleEnemy extends Enemy {
         if (health <= 0) {
             health = 0;
             isShocked = false;
-            destructionFinished = false;
             wasMoving = false;
-            setAnimationState(AnimationState.DESTROY);
+            beginDestruction(game);
         } else {
             damageAnimationEnd = now + DAMAGE_ANIMATION_TIME;
             setAnimationState(AnimationState.DAMAGE);
         }
     }
 
-    private void updateDestructionAnimation(double delta) {
+    private void beginDestruction(CyberLegacy game) {
+        destructionFinished = false;
+        setAnimationState(AnimationState.DESTROY);
+
+        triggerDestructionEffect(game);
+    }
+
+    private void triggerDestructionEffect(CyberLegacy game) {
+        if (destructionEffectTriggered) return;
+
+        destructionEffectTriggered = true;
+        game.triggerShake(14);
+        for (int i = 0; i < 18; i++) {
+            game.particles.add(new Particle(
+                    x + COLLISION_WIDTH / 2.0f,
+                    y + COLLISION_HEIGHT / 2.0f,
+                    i % 2 == 0 ? new Color(255, 150, 35) : new Color(255, 70, 15)));
+        }
+    }
+
+    private void updateDestructionAnimation(CyberLegacy game, double delta) {
         if (animationState != AnimationState.DESTROY) {
+            destructionFinished = false;
             setAnimationState(AnimationState.DESTROY);
         }
+        triggerDestructionEffect(game);
         advanceAnimation(delta);
     }
 
@@ -430,6 +452,8 @@ public class VehicleEnemy extends Enemy {
                 pixelGraphics.setColor(new Color(255, 255, 255, 120));
                 pixelGraphics.fillRect(drawX, drawY, CELL_WIDTH, CELL_HEIGHT);
             }
+        } else if (animationState == AnimationState.DESTROY) {
+            renderExplosionFallback(g2d, drawX, drawY);
         } else {
             renderFallback(pixelGraphics, drawX, (int) y);
         }
@@ -446,6 +470,23 @@ public class VehicleEnemy extends Enemy {
         }
 
         pixelGraphics.dispose();
+    }
+
+    private void renderExplosionFallback(Graphics2D g2d, int drawX, int drawY) {
+        float progress = animationFrame / (float) Math.max(1, DESTROY_FRAMES - 1);
+        int centerX = drawX + CELL_WIDTH / 2;
+        int centerY = drawY + CELL_HEIGHT / 2;
+        int radius = Math.round(8.0f + progress * 29.0f);
+
+        g2d.setColor(new Color(255, 65, 10, 80));
+        g2d.fillOval(centerX - radius - 8, centerY - radius - 8,
+                (radius + 8) * 2, (radius + 8) * 2);
+        g2d.setColor(new Color(255, 150, 20, 220));
+        g2d.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+        g2d.setColor(new Color(255, 245, 150, 245));
+        int coreRadius = Math.max(3, radius / 2);
+        g2d.fillOval(centerX - coreRadius, centerY - coreRadius,
+                coreRadius * 2, coreRadius * 2);
     }
 
     private void renderFallback(Graphics2D g2d, int drawX, int drawY) {
