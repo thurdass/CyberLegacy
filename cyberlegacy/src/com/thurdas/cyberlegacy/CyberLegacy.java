@@ -20,7 +20,8 @@ import com.thurdas.cyberlegacy.entities.*;
 
 public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseListener, MouseWheelListener {
 
-    public final int TILE_SIZE = 32;
+    public static final int TILE_SIZE = 32;
+    private static final int MAP_SIZE = 100;
 
 
     private BufferedImage[] floorTextures = new BufferedImage[3];
@@ -139,10 +140,10 @@ public class CyberLegacy extends JPanel implements Runnable, KeyListener, MouseL
     }
 
     private void initMap(int phase) {
-        map = new int[100][100];
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                if (x == 0 || y == 0 || x == 99 || y == 99) {
+        map = new int[MAP_SIZE][MAP_SIZE];
+        for (int x = 0; x < MAP_SIZE; x++) {
+            for (int y = 0; y < MAP_SIZE; y++) {
+                if (x == 0 || y == 0 || x == MAP_SIZE - 1 || y == MAP_SIZE - 1) {
                     map[x][y] = 1;
                 } else {
                     map[x][y] = 0;
