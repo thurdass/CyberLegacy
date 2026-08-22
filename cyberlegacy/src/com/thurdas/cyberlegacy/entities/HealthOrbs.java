@@ -32,7 +32,7 @@ public class HealthOrbs {
                 healthImage = ImageIO.read(imgFile);
             }
         } catch (Exception e) {
-            System.err.println("Erro ao carregar imagem do DropItem: " + e.getMessage());
+            System.err.println("Error in the loading: " + e.getMessage());
         }
     }
 
